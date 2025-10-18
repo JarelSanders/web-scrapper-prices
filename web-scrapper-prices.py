@@ -2,16 +2,18 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+from urllib.parse import urljoin
 
 # url os website to scrape
-url = 'https://books.toscrape.com/index.html'
+url2 = 'https://books.toscrape.com/'
+# absolute_url = urljoin()
 
 # send GET request to site
-r = requests.get(url)
+r = requests.get(url2)
 
 if r.status_code == 200:
     # displays url
-    print(url)
+    # print(url)
 
     # print('Status code', r.status_code)
     print()
@@ -24,6 +26,47 @@ if r.status_code == 200:
     # find all <a> tags
     myFind = soup.find_all('a', title=True)
     # print(myFind)
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+
+    # find all <a> tags
+    a_tags = soup.find_all('a')
+    # print(a_tags)
+    all_urls = []
+
+    # loop through all <a> tags found on the page
+    for tag in a_tags:
+        # get the href attribute (the link URL)
+        href = tag.get('href')
+        # check if the tag has an href value and add the link to the list of all URLs
+        if href:
+            all_urls.append(href)
+    # loop through all collected URLs
+    for url in all_urls:
+        # combine base URL (url2) with relative URL to form a full URL
+        full_url = urljoin(url2, url)
+        # print(url)
+        # prints full URL
+        print(full_url)
+
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
 
     # Extract all book titles from the 'title' attribute
     book_titles = [book['title'] for book in myFind]
@@ -61,7 +104,7 @@ if r.status_code == 200:
     df['In_Stock'] = book_availability
 
     # prints updated dataframe
-    print(df)
+    # print(df)
 
     # exports dataframe to EXCEL
     df.to_excel('output.xlsx')
