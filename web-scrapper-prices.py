@@ -4,112 +4,74 @@ import requests
 import pandas as pd
 from urllib.parse import urljoin
 
-# url os website to scrape
-url2 = 'https://books.toscrape.com/'
-# absolute_url = urljoin()
+# url website to scrape
+base_url = 'https://books.toscrape.com/'
 
 # send GET request to site
-r = requests.get(url2)
+r = requests.get(base_url)
+books = []
+
+
 
 if r.status_code == 200:
-    # displays url
-    # print(url)
-
-    # print('Status code', r.status_code)
-    print()
 
     # parse HTML
     soup = BeautifulSoup(r.text, 'html.parser')
-    # soup = BeautifulSoup(r.content, 'html5lib')
-    # print(soup)
+ 
+    book_find = soup.find_all('article', class_ = 'product_pod')
 
-    # find all <a> tags
-    myFind = soup.find_all('a', title=True)
-    # print(myFind)
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
+    # get the outer <ul> with class 'nav nav-list'
+    nav_list = soup.find("ul", class_="nav nav-list")
 
-    # find all <a> tags
-    a_tags = soup.find_all('a')
-    # print(a_tags)
-    all_urls = []
+    # finds the nested <ul> inside the first <li>
+    category_ul = nav_list.find("ul")
 
-    # loop through all <a> tags found on the page
-    for tag in a_tags:
-        # get the href attribute (the link URL)
-        href = tag.get('href')
-        # check if the tag has an href value and add the link to the list of all URLs
-        if href:
-            all_urls.append(href)
-    # loop through all collected URLs
-    for url in all_urls:
-        # combine base URL (url2) with relative URL to form a full URL
-        full_url = urljoin(url2, url)
-        # print(url)
-        # prints full URL
-        print(full_url)
+    # get category links
+    category_urls = []
+    for li in category_ul.find_all("li"):
+        a_tag = li.find("a")
+        relative_url = a_tag["href"]
+        full_url = urljoin(base_url, relative_url.strip())
+        category_urls.append(full_url)
 
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
+    # print category URLs
+    for url in category_urls:
+        print(url)
 
-    # Extract all book titles from the 'title' attribute
-    book_titles = [book['title'] for book in myFind]
-    # print(book_titles)
+        # iterating through the articles_find method to print each book name, price and availability 
+        for article in book_find:
+            # Find the <h3> inside the article
+            h3_tag = article.find('h3')
 
-    # print()
-    # create an empty pandas dataframe
-    df = pd.DataFrame()
-    # df['Book'] = None
-    # # df['Price'] = None
-    # df['In_Stock'] = None
+            # Find the <a> tag inside the <h3>
+            a_tag = h3_tag.find('a')
 
-    # Find all price elements by class
-    find_price = soup.find_all('p', class_='price_color')
+            book_name = a_tag['title']
+            book_price = article.find('p', class_='price_color').text
+            book_availability = article.find(
+                'p', class_='instock availability').text.strip()
+             
+            # print(book_name)
+            # print(book_price)
+            # print(book_availability)
+            # print(book_name, book_price, book_availability)
+            # print()
 
-    # Extract price text from each element
-    book_price = [price.text for price in find_price]
-    # print(book_price)
+            # stores the information into a dictionary so i can add it into a list  
+            book_info =   {
+                "book_name": book_name,
+                "book_prics": book_price,
+                "book_availability": book_availability,
+            }
+            books.append(book_info)
 
-    # Find all availability elements
-    find_available = soup.find_all('p', class_='instock availability')
+            # print(book_info)
 
-    # Clean and extract availability text
-    book_availability = [avail.text.strip() for avail in find_available]
-
-    # print(book_availability)
-
-    # Add book titles to DataFrame
-    df['Book'] = book_titles
-
-    # Add book price to DataFrame
-    df['Price'] = book_price
-
-    # Add book availability to DataFrame
-    df['In_Stock'] = book_availability
-
-    # prints updated dataframe
-    # print(df)
-
-    # exports dataframe to EXCEL
-    df.to_excel('output.xlsx')
+# prints the list of books 
+print(books)
 
 
-else:
-    # prints message is request is not found
-    print('NotFound')
+# save all books to CSV
+df = pd.DataFrame(books)
+# df.to_xlsx("output.xlsx", index=False)
+df.to_excel("output.xlsx", index=False)
