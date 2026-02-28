@@ -5,7 +5,6 @@ A Python project demonstrating **web scraping**, **data preprocessing**, and **m
 - Book titles
 - Prices
 - Availability
-- Ratings
 
 The extracted data is cleaned and structured using **Pandas**, and can be used for **machine learning experiments**, such as price prediction or stock classification.
 
