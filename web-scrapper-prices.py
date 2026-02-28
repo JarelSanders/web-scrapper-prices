@@ -12,13 +12,15 @@ r = requests.get(base_url)
 books = []
 
 
-
 if r.status_code == 200:
+
+    # prevents encoding artifacts like 'Â' appearing in scraped text
+    r.encoding = 'utf-8'
 
     # parse HTML
     soup = BeautifulSoup(r.text, 'html.parser')
- 
-    book_find = soup.find_all('article', class_ = 'product_pod')
+
+    book_find = soup.find_all('article', class_='product_pod')
 
     # get the outer <ul> with class 'nav nav-list'
     nav_list = soup.find("ul", class_="nav nav-list")
@@ -38,7 +40,7 @@ if r.status_code == 200:
     for url in category_urls:
         print(url)
 
-        # iterating through the articles_find method to print each book name, price and availability 
+        # iterating through the articles_find method to print each book name, price and availability
         for article in book_find:
             # Find the <h3> inside the article
             h3_tag = article.find('h3')
@@ -46,32 +48,40 @@ if r.status_code == 200:
             # Find the <a> tag inside the <h3>
             a_tag = h3_tag.find('a')
 
+
             book_name = a_tag['title']
             book_price = article.find('p', class_='price_color').text
             book_availability = article.find(
                 'p', class_='instock availability').text.strip()
-             
+            
+
             # print(book_name)
             # print(book_price)
             # print(book_availability)
             # print(book_name, book_price, book_availability)
             # print()
+            
 
-            # stores the information into a dictionary so i can add it into a list  
-            book_info =   {
+            # stores the information into a dictionary so i can add it into a list
+            book_info = {
                 "book_name": book_name,
-                "book_prics": book_price,
+                "book_price": book_price,
                 "book_availability": book_availability,
             }
+            
+
             books.append(book_info)
-
-            # print(book_info)
-
-# prints the list of books 
+# prints the list of books
 print(books)
 
+# Convert the list of book dictionaries into a DataFrame
+df = pd.DataFrame(books)
+
+# convert the cleaned string values to float so they can be used in ML models
+df['book_price'] = df['book_price'].str.replace(
+    '£', '').str.strip().astype(float)
 
 # save all books to CSV
-df = pd.DataFrame(books)
-# df.to_xlsx("output.xlsx", index=False)
 df.to_excel("output.xlsx", index=False)
+
+
