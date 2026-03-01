@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Excel
+.~lock.*#
+output.xlsx
+
 # Distribution / packaging
 .Python
 build/
@@ -54,7 +58,7 @@ cover/
 # Translations
 *.mo
 *.pot
-.~lock.*#
+
 
 # Django stuff:
 *.log
