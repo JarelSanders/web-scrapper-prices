@@ -59,16 +59,16 @@ if r.status_code == 200:
 
             # iterating through the articles_find method to print each book name, price and availability
             for article in book_find:
+
+                # convert star rating word into a numeric value
+                book_rating = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}[
+                    article.find('p', class_='star-rating')['class'][1]]
+
                 # find the <h3> inside the article
                 h3_tag = article.find('h3')
 
                 # Find the <a> tag inside the <h3>
                 a_tag = h3_tag.find('a')
-
-                book_name = a_tag['title']
-                book_price = article.find('p', class_='price_color').text
-                book_availability = article.find(
-                    'p', class_='instock availability').text.strip()
 
                 # print(book_name)
                 # print(book_price)
@@ -76,17 +76,19 @@ if r.status_code == 200:
                 # print(book_name, book_price, book_availability)
                 # print()
 
-                # book title, price and avilability
+                # book title, price, avilability and rating
                 book_name = a_tag['title']
                 book_price = article.find('p', class_='price_color').text
                 book_availability = article.find(
                     'p', class_='instock availability').text.strip()
+                # book_rating = article.find('i', class_='icon-star')
 
                 # add the book info to the books list
                 books.append({
                     "book_name": book_name,
                     "book_price": book_price,
                     "book_availability": book_availability,
+                    "book_Star_rating": book_rating
                 })
             # check if a next page exists on the current page
             next_li = soup.find('li', class_='next')
