@@ -1,16 +1,28 @@
-# Web Scraper & ML - Book Prices
+Book Price Web Scraper
+A Python web scraping project that collects book information from Books to Scrape and exports the data for analysis.
 
-A Python project demonstrating **web scraping**, **data preprocessing**, and **machine learning**. This project extracts book information from [Books to Scrape](https://books.toscrape.com), including:
+The scraper extracts key details for each book and organizes them into a structured dataset using Pandas.
 
-- Book titles
-- Prices
-- Availability
+Data Collected
+Book titles
+Prices
+Ratings
+Stock availability
+Features
+Scrapes multiple book categories
+Handles pagination across category pages
+Converts rating classes into numeric values
+Stores results in a Pandas DataFrame
+Exports the dataset to Excel for further analysis
+Technologies Used
+Python
+BeautifulSoup
+Requests
+Pandas
+Output
+The script generates a structured dataset containing all scraped books and saves the results to an Excel file.
 
-The extracted data is cleaned and structured using **Pandas**, and can be used for **machine learning experiments**, such as price prediction or stock classification.
-
-## Features
-
-- Scrape book titles, prices, ratings, and stock availability
-- Store data in a Pandas DataFrame
-- Export results to Excel for analysis
-- Apply ML models to predict book prices or stock status
+Future Improvements
+Add additional data fields from book detail pages
+Improve data cleaning and validation
+Add visualization or analysis of the collected dataset
