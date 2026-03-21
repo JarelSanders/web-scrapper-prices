@@ -5,6 +5,8 @@ A Python project demonstrating **web scraping**, **data preprocessing**, and **m
 - Book titles
 - Prices
 - Availability
+- Category
+- Rating
 
 The extracted data is cleaned and structured using **Pandas**, and can be used for **machine learning experiments**, such as price prediction or stock classification.
 
@@ -14,3 +16,4 @@ The extracted data is cleaned and structured using **Pandas**, and can be used f
 - Store data in a Pandas DataFrame
 - Export results to Excel for analysis
 - Apply ML models to predict book prices or stock status
+- Store scraped data in a SQLite database (books.db) for persistent storage

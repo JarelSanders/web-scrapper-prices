@@ -2,7 +2,25 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import sqlite3
 from urllib.parse import urljoin
+
+# connect to db, create db if it does not exist
+conn = sqlite3.connect("books.db")
+cursor = conn.cursor()
+
+# create table and execute
+cursor.execute('''
+        CREATE TABLE IF NOT EXISTS books(
+            id INTEGER PRIMARY KEY, 
+            name TEXT NOT NULL,
+            price INTEGER NOT NULL,
+            category TEXT ,
+            availability TEXT NOT NULL,
+            rating INTEGER
+
+        )
+    ''')
 
 # url website to scrape
 base_url = 'https://books.toscrape.com/'
@@ -54,6 +72,8 @@ if r.status_code == 200:
             # parse the HTML content of the page
             soup = BeautifulSoup(r.text, 'html.parser')
 
+            category_name = soup.find('h1').text.strip()
+
             # scrape books on this page
             book_find = soup.find_all('article', class_='product_pod')
 
@@ -70,6 +90,12 @@ if r.status_code == 200:
                 # Find the <a> tag inside the <h3>
                 a_tag = h3_tag.find('a')
 
+                # # find the <h1> inside the div
+                # cat_tag = article.find('div')
+
+                # # Find the category names
+                # a_tag_cat = cat_tag.find('h1')
+
                 # print(book_name)
                 # print(book_price)
                 # print(book_availability)
@@ -81,15 +107,24 @@ if r.status_code == 200:
                 book_price = article.find('p', class_='price_color').text
                 book_availability = article.find(
                     'p', class_='instock availability').text.strip()
-                # book_rating = article.find('i', class_='icon-star')
+                book_category = category_name
 
                 # add the book info to the books list
                 books.append({
                     "book_name": book_name,
                     "book_price": book_price,
+                    "book_category": book_category,
                     "book_availability": book_availability,
                     "book_Star_rating": book_rating
                 })
+
+                # using ? as placeholder for values
+                query = "INSERT INTO books(name, price, category, availability, rating) VALUES (?, ?, ?, ?, ?)"
+
+                # pass the values as a tuple
+                cursor.execute(query, (book_name, book_price, book_category,
+                               book_availability, book_rating))
+
             # check if a next page exists on the current page
             next_li = soup.find('li', class_='next')
             if next_li:
@@ -103,6 +138,8 @@ if r.status_code == 200:
                 current_page_url = None
 # prints the list of books
 print(books)
+# print('\n\n')
+
 
 # convert the list of book dictionaries into a DataFrame
 df = pd.DataFrame(books)
@@ -111,5 +148,14 @@ df = pd.DataFrame(books)
 df['book_price'] = df['book_price'].str.replace(
     '£', '').str.strip().astype(float)
 
+cursor.execute('SELECT * FROM books')
+rows = cursor.fetchall()
+for row in rows:
+    print(row)
+
 # save all books to CSV
 df.to_excel("output.xlsx", index=False)
+
+# commit changes and close connection
+conn.commit()
+conn.close()
